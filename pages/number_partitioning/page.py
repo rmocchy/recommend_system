@@ -11,9 +11,9 @@ import streamlit as st
 
 from core.qubo_editor import qubo_editor
 from core.sa_sidebar import sa_sidebar
-from pages._number_partitioning.default_qubo import DEFAULT_QUBO_CODE
-from pages._number_partitioning.input_ui import render_input
-from pages._number_partitioning.output_ui import render_output
+from pages.number_partitioning.default_qubo import DEFAULT_QUBO_CODE
+from pages.number_partitioning.input_ui import render_input
+from pages.number_partitioning.output_ui import render_output
 
 st.title("✂️ 数分割問題 — QUBO × シミュレーテッドアニーリング")
 st.markdown(

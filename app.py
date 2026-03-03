@@ -10,7 +10,7 @@ st.set_page_config(
 
 # ── ページ定義 ──────────────────────────
 number_partitioning = st.Page(
-    "pages/_number_partitioning/page.py",
+    "pages/number_partitioning/page.py",
     title="数分割問題",
     icon="✂️",
 )
