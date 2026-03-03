@@ -5,37 +5,28 @@
 
 from __future__ import annotations
 
-import traceback
-
 import numpy as np
 import pandas as pd
 import streamlit as st
 
-from core.qubo_editor import qubo_editor, render_qubo_params
+from core.sa_viz import plot_qubo_matrix
 from pages.recommendation.cards import item_card_html
-from pages.recommendation.default_qubo import DEFAULT_QUBO_CODE
+from pages.recommendation.qubo import PARAMS, build_qubo_matrix
 from pages.recommendation.items_data import (
     ALL_CATEGORIES,
     DEFAULT_ITEMS,
     Item,
 )
 
-_QUBO_DESCRIPTION = """\
-`PARAMS` 辞書にパラメータを追加すると、スライダーが**自動で更新**されます。  
-`build_qubo(items, required_categories, optional_categories, budget_target, params)` \
-関数を書き換えて定式化を変更してください。  
-編集後は **Ctrl+Enter** またはエディタ外クリックで自動適用されます。
-"""
-
 def render_input(
     items: list[Item] | None = None,
-) -> tuple[list[Item], list[str], list[str], float, dict, np.ndarray] | None:
+) -> tuple[list[Item], list[str], list[str], float, np.ndarray] | None:
     """
-    商品カタログ・条件設定・QUBO 構築UIを描画する。
+    商品カタログ・条件設定・ QUBO 構築UIを描画する。
 
     Returns
     -------
-    (items, required_cats, optional_cats, budget, qubo_params, Q_matrix)
+    (items, required_cats, optional_cats, budget, Q_matrix)
     または None (構築エラー時)
     """
     if items is None:
@@ -80,15 +71,20 @@ def render_input(
 
     st.divider()
 
-    # ── QUBO パラメータ ──────────────────────────────────────
+    # ── QUBO パラメータスライダー ────────────────────────
     st.subheader("🔢 QUBO パラメータ")
-    PARAMS, build_qubo_fn = qubo_editor(
-        default_code=DEFAULT_QUBO_CODE,
-        session_prefix="recommendation",
-        description=_QUBO_DESCRIPTION,
-    )
-    with st.expander("スライダーで調整", expanded=False):
-        qubo_params = render_qubo_params(PARAMS, key_prefix="rec", n_cols=2)
+    cols = st.columns(2)
+    qubo_params: dict = {}
+    for idx, (key, spec) in enumerate(PARAMS.items()):
+        with cols[idx % 2]:
+            qubo_params[key] = st.slider(
+                spec["label"],
+                min_value=float(spec["min"]),
+                max_value=float(spec["max"]),
+                value=float(spec["default"]),
+                step=float(spec["step"]),
+                key=f"rec__{key}",
+            )
 
     st.divider()
 
@@ -126,14 +122,7 @@ def render_input(
         st.caption(f"¥{budget:,}")
 
     # ── QUBO 行列構築 ────────────────────────────────────────
-    try:
-        Q = build_qubo_fn(items, required_cats, optional_cats, budget, qubo_params)  # type: ignore[operator]
-        if not isinstance(Q, np.ndarray):
-            raise TypeError("build_qubo は np.ndarray を返す必要があります。")
-    except Exception:
-        st.error(f"**QUBO 構築エラー:**\n```\n{traceback.format_exc()}\n```")
-        return None
-
+    Q = build_qubo_matrix(items, required_cats, optional_cats, budget, qubo_params)
     n = len(items)
 
     # ── メトリクス表示 ──────────────────────────────────────
@@ -143,7 +132,6 @@ def render_input(
     c4.metric("予算上限", f"¥{budget:,}")
 
     with st.expander("📐 QUBO 行列プレビュー", expanded=False):
-        from core.sa_viz import plot_qubo_matrix
         labels = [f"{it.emoji}{it.id}" for it in items]
         tab_heat, tab_raw = st.tabs(["ヒートマップ", "生の値"])
         with tab_heat:
@@ -152,4 +140,4 @@ def render_input(
             df_q = pd.DataFrame(Q, index=labels, columns=labels)
             st.dataframe(df_q.style.format("{:.2f}"), use_container_width=True)
 
-    return items, required_cats, optional_cats, budget, qubo_params, Q
+    return items, required_cats, optional_cats, budget, Q
