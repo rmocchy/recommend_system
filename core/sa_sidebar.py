@@ -23,6 +23,7 @@ class SAParams:
     cooling_rate: float
     max_iter: int
     seed: int | None
+    timeout_sec: float
     run: bool
 
 
@@ -58,6 +59,11 @@ def sa_sidebar() -> SAParams:
             "乱数シード (0=ランダム)",
             min_value=0, max_value=99999, value=42, step=1,
         )
+        timeout_sec = st.number_input(
+            "タイムアウト (秒)",
+            min_value=1, max_value=60, value=10, step=1,
+            help="SAがこの秒数を超えたら強制終了します。",
+        )
         st.divider()
         run = st.button("▶ SA を実行", type="primary", use_container_width=True)
 
@@ -67,5 +73,6 @@ def sa_sidebar() -> SAParams:
         cooling_rate=float(cooling_rate),
         max_iter=int(max_iter),
         seed=int(seed_raw) if seed_raw != 0 else None,
+        timeout_sec=float(timeout_sec),
         run=run,
     )

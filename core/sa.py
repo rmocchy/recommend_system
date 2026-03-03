@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import random
+import time
 
 import numpy as np
 
@@ -20,6 +21,7 @@ def simulated_annealing(
     cooling_rate: float,
     max_iter: int,
     seed: int | None = None,
+    timeout_sec: float | None = None,
 ) -> dict:
     """
     シミュレーテッドアニーリングで QUBO を最小化する。
@@ -42,6 +44,7 @@ def simulated_annealing(
         best_history    : 各ステップのベストエネルギー推移
         temp_history    : 各ステップの温度推移
         n_iter          : 実際のイテレーション数
+        timed_out       : タイムアウトで打ち切られたか否か
     """
     rng = random.Random(seed)
     np_rng = np.random.default_rng(seed)
@@ -56,9 +59,14 @@ def simulated_annealing(
     energy_history: list[float] = [current_energy]
     best_history: list[float] = [best_energy]
     temp_history: list[float] = [T]
+    timed_out = False
+    t0 = time.perf_counter()
 
     for _ in range(max_iter):
         if T <= T_min:
+            break
+        if timeout_sec is not None and time.perf_counter() - t0 >= timeout_sec:
+            timed_out = True
             break
 
         flip_idx = rng.randint(0, n - 1)
@@ -87,4 +95,5 @@ def simulated_annealing(
         "best_history": best_history,
         "temp_history": temp_history,
         "n_iter": len(energy_history) - 1,
+        "timed_out": timed_out,
     }

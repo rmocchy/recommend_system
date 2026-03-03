@@ -39,8 +39,12 @@ def render_output(
             cooling_rate=sa_params.cooling_rate,
             max_iter=sa_params.max_iter,
             seed=sa_params.seed,
+            timeout_sec=sa_params.timeout_sec,
         )
         elapsed = time.perf_counter() - t0
+
+    if result["timed_out"]:
+        st.warning(f"⏱ タイムアウト ({sa_params.timeout_sec:.0f}秒) により SA を打ち切りました。現在の最良解を表示しています。")
 
     best_x = result["best_x"].astype(int)
     best_energy: float = result["best_energy"]

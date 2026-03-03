@@ -32,7 +32,7 @@ input_result = render_input(items=DEFAULT_ITEMS)
 
 # 出力 UI (EC サイト風)
 if input_result is not None:
-    items, required_cats, optional_cats, budget, _qubo_params, Q = input_result
+    items, required_cats, optional_cats, budget, Q = input_result
     st.divider()
     st.subheader("結果")
     render_output(
