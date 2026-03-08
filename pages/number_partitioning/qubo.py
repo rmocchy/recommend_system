@@ -1,15 +1,15 @@
-"""数分割問題 — QUBO 定式化モジュール。"""
+"""Number Partitioning — QUBO formulation module."""
 
 from __future__ import annotations
 
 import numpy as np
 
-# QUBO パラメータ定義
-# type/label/default/min/max/step を持つ辞書リスト
+# QUBO parameter definition
+# Each entry holds: type / label / default / min / max / step
 PARAMS: dict = {
     "lam": {
         "type": "float",
-        "label": "ペナルティ係数 λ",
+        "label": "Penalty coefficient λ",
         "default": 1.0,
         "min": 0.1,
         "max": 10.0,
@@ -20,9 +20,9 @@ PARAMS: dict = {
 
 def build_qubo(numbers: list[float], lam: float = 1.0) -> np.ndarray:
     """
-    数分割問題の QUBO 行列を構築する。
+    Build the QUBO matrix for the number partitioning problem.
 
-    目的関数: λ * (Σ_i (2x_i - 1) * n_i)^2
+    Objective: λ * (Σ_i (2x_i - 1) * n_i)^2
     Q[i][i] = λ * 4 * n_i * (n_i - S)
     Q[i][j] = λ * 8 * n_i * n_j  (i ≠ j)
     """

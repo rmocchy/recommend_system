@@ -1,4 +1,4 @@
-"""数分割問題 — SA 実行 & 出力 UI。"""
+"""Number Partitioning — SA execution & output UI."""
 
 from __future__ import annotations
 
@@ -15,11 +15,11 @@ from core.sa_sidebar import SAParams
 from core.sa_viz import plot_sa_detail
 
 
-# ── 数分割問題専用グラフ ─────────────────────────────────────
+# ── Number partitioning chart ─────────────────────────────────
 def _plot_partition(numbers: Sequence[float], best_x: np.ndarray) -> go.Figure:
-    """グループ A / B への分割結果を棒グラフで表示する。"""
+    """Bar chart showing the partition result for Group A / B."""
     labels = [f"n_{i}" for i in range(len(numbers))]
-    group_labels = ["グループ A (x=1)" if xi == 1 else "グループ B (x=0)" for xi in best_x]
+    group_labels = ["Group A (x=1)" if xi == 1 else "Group B (x=0)" for xi in best_x]
     colors = ["#636EFA" if xi == 1 else "#EF553B" for xi in best_x]
 
     fig = go.Figure()
@@ -38,8 +38,8 @@ def _plot_partition(numbers: Sequence[float], best_x: np.ndarray) -> go.Figure:
     sum_A = sum(n for n, xi in zip(numbers, best_x) if xi == 1)
     sum_B = sum(n for n, xi in zip(numbers, best_x) if xi == 0)
     fig.update_layout(
-        title=f"Σ A = {sum_A:.2f}  /  Σ B = {sum_B:.2f}  /  差 = {abs(sum_A - sum_B):.4f}",
-        xaxis_title="変数", yaxis_title="値",
+        title=f"Σ A = {sum_A:.2f}  /  Σ B = {sum_B:.2f}  /  Diff = {abs(sum_A - sum_B):.4f}",
+        xaxis_title="Variable", yaxis_title="Value",
         height=340, barmode="group",
         margin=dict(t=50, b=40),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
@@ -47,26 +47,26 @@ def _plot_partition(numbers: Sequence[float], best_x: np.ndarray) -> go.Figure:
     return fig
 
 
-# ── メイン出力 UI ────────────────────────────────────────────
+# ── Main output UI ────────────────────────────────────────────
 def render_output(
     numbers: list[float],
     Q: np.ndarray,
     sa_params: SAParams,
 ) -> None:
     """
-    SA を実行し、結果・グラフを描画する。
+    Run SA and render results and graphs.
 
     Parameters
     ----------
-    numbers   : 入力数列
-    Q         : QUBO 行列
-    sa_params : sa_sidebar() が返す SAParams
+    numbers   : Input number sequence
+    Q         : QUBO matrix
+    sa_params : SAParams returned by sa_sidebar()
     """
     if not sa_params.run:
-        st.info("👈 サイドバーで SA パラメータを設定し、**SA を実行** ボタンを押してください。")
+        st.info("👈 Set SA parameters in the sidebar, then press the **Run SA** button.")
         return
 
-    with st.spinner("シミュレーテッドアニーリングを実行中…"):
+    with st.spinner("Running Simulated Annealing…"):
         t0 = time.perf_counter()
         result = simulated_annealing(
             Q=Q,
@@ -80,7 +80,7 @@ def render_output(
         elapsed = time.perf_counter() - t0
 
     if result["timed_out"]:
-        st.warning(f"⏱ タイムアウト ({sa_params.timeout_sec:.0f}秒) により SA を打ち切りました。現在の最良解を表示しています。")
+        st.warning(f"⏱ SA stopped due to timeout ({sa_params.timeout_sec:.0f}s). Showing best solution found so far.")
 
     best_x = result["best_x"].astype(int)
     best_energy: float = result["best_energy"]
@@ -90,13 +90,13 @@ def render_output(
     sum_B = sum(n for n, xi in zip(numbers, best_x) if xi == 0)
     diff = abs(sum_A - sum_B)
 
-    # ── 共通: 最小エネルギー・実行時間 ───────────────────────
-    st.subheader("📊 実行結果")
+    # ── Common: best energy & runtime ───────────────────────────
+    st.subheader("📊 Results")
     m1, m2 = st.columns(2)
-    m1.metric("最良エネルギー E*", f"{best_energy:.4f}")
-    m2.metric("実行時間", f"{elapsed * 1000:.1f} ms")
+    m1.metric("Best Energy E*", f"{best_energy:.4f}")
+    m2.metric("Runtime", f"{elapsed * 1000:.1f} ms")
 
-    # ── 共通: エネルギー推移・温度推移 ───────────────────────
+    # ── Common: energy & temperature history ─────────────────────
     st.plotly_chart(
         plot_sa_detail(result["energy_history"], result["best_history"], result["temp_history"]),
         use_container_width=True,
@@ -104,20 +104,20 @@ def render_output(
 
     st.divider()
 
-    # ── 数分割専用 UI ────────────────────────────────────────
-    st.subheader("✂️ 分割結果")
+    # ── Number partitioning specific UI ────────────────────────────
+    st.subheader("✂️ Partition Results")
     col_table, col_chart = st.columns([1, 2])
     with col_table:
-        st.markdown("**変数の割り当て**")
+        st.markdown("**Variable Assignment**")
         rows = [
-            {"変数": f"n_{i}", "値": numbers[i], "グループ": "A" if xi == 1 else "B"}
+            {"Variable": f"n_{i}", "Value": numbers[i], "Group": "A" if xi == 1 else "B"}
             for i, xi in enumerate(best_x)
         ]
         df = pd.DataFrame(rows)
         st.dataframe(
             df.style.apply(
                 lambda row: [
-                    "background-color: #d0d8ff" if row["グループ"] == "A"
+                    "background-color: #d0d8ff" if row["Group"] == "A"
                     else "background-color: #ffd0d0"
                 ] * len(row),
                 axis=1,
@@ -125,7 +125,7 @@ def render_output(
             hide_index=True,
             use_container_width=True,
         )
-        st.markdown(f"**Σ A** = `{sum_A:.2f}`　　**Σ B** = `{sum_B:.2f}`　　**差** = `{diff:.4f}`")
+        st.markdown(f"**Σ A** = `{sum_A:.2f}`    **Σ B** = `{sum_B:.2f}`    **Diff** = `{diff:.4f}`")
 
     with col_chart:
         st.plotly_chart(_plot_partition(numbers, best_x), use_container_width=True)

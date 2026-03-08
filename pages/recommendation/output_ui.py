@@ -1,4 +1,4 @@
-"""レコメンドシステム — SA 実行 & EC サイト風リッチ出力 UI。"""
+"""Recommendation System — SA execution & rich output UI."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from core.sa_viz import plot_sa_detail
 from pages.recommendation.cards import compact_card_html, item_card_html
 from pages.recommendation.items_data import Item
 
-# ── メイン出力 UI ────────────────────────────────────────────
+# ── Main output UI ────────────────────────────────────
 def render_output(
     items: list[Item],
     budget: float,
@@ -23,14 +23,14 @@ def render_output(
     sa_params: SAParams,
 ) -> None:
     """
-    SA を実行し、EC サイト風リッチ画面で結果を表示する。
+    Run SA and display results in a rich shopping-site style layout.
     """
     if not sa_params.run:
-        st.info("👈 サイドバーで **SA を実行** ボタンを押してください。")
+        st.info("👈 Press the **Run SA** button in the sidebar.")
         return
 
-    # ── SA 実行 ──────────────────────────────────────────────
-    with st.spinner("🤖 SA でレコメンドを計算中…"):
+    # ── Run SA ────────────────────────────────────────
+    with st.spinner("🤖 Computing recommendations with SA…"):
         t0 = time.perf_counter()
         result = simulated_annealing(
             Q=Q,
@@ -44,7 +44,7 @@ def render_output(
         elapsed = time.perf_counter() - t0
 
     if result["timed_out"]:
-        st.warning(f"⏱ タイムアウト ({sa_params.timeout_sec:.0f}秒) により SA を打ち切りました。現在の最良解を表示しています。")
+        st.warning(f"⏱ SA stopped due to timeout ({sa_params.timeout_sec:.0f}s). Showing best solution found so far.")
 
     best_x = result["best_x"].astype(int)
     best_energy: float = result["best_energy"]
@@ -54,21 +54,21 @@ def render_output(
 
     total_price = sum(it.price for it in recommended)
 
-    # ── KPI バー ─────────────────────────────────────────────
+    # ── KPI bar ──────────────────────────────────────────
     k1, k2, k3 = st.columns(3)
-    k1.metric("🛒 推奨アイテム数", f"{len(recommended)} 件")
-    k2.metric("💴 合計金額", f"¥{total_price:,}")
-    k3.metric("⚡ SA 実行時間", f"{elapsed * 1000:.0f} ms")
+    k1.metric("🛒 Recommended Items", f"{len(recommended)}")
+    k2.metric("💰 Total Price", f"${total_price:,}")
+    k3.metric("⚡ SA Runtime", f"{elapsed * 1000:.0f} ms")
 
     st.divider()
 
-    # ── 推奨商品グリッド ─────────────────────────────────────
-    st.subheader(f"🛒 推奨商品 ({len(recommended)} 件)")
+    # ── Recommended product grid ──────────────────────────────
+    st.subheader(f"🛒 Recommended Products ({len(recommended)})")
 
     if not recommended:
-        st.warning("推奨商品がありません。SA パラメータまたは QUBO 係数を調整してください。")
+        st.warning("No products were recommended. Try adjusting the SA parameters or QUBO settings.")
     else:
-        # スコア順に並べて表示
+        # Sort by rating and display
         rec_ranked = sorted(recommended, key=lambda x: -x.score)
         cols_per_row = min(4, len(rec_ranked))
         for row_start in range(0, len(rec_ranked), cols_per_row):
@@ -84,14 +84,14 @@ def render_output(
 
     st.divider()
 
-    # ── カート合計バー ────────────────────────────────────────
+    # ── Cart total bar ─────────────────────────────────────────
     budget_pct = min(total_price / budget * 100, 150) if budget > 0 else 0
     bar_color = "#e74c3c" if total_price > budget else "#2ecc71"
     st.markdown(f"""
 <div style="background:#f8f9fa;border-radius:12px;padding:16px 20px;margin-bottom:16px;">
   <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-    <span style="font-weight:700;color:#333;">🛒 カート合計</span>
-    <span style="font-size:20px;font-weight:800;color:{bar_color};">¥{total_price:,}</span>
+    <span style="font-weight:700;color:#333;">🛒 Cart Total</span>
+    <span style="font-size:20px;font-weight:800;color:{bar_color};">${total_price:,}</span>
   </div>
   <div style="background:#e9ecef;border-radius:8px;height:12px;overflow:hidden;">
     <div style="
@@ -101,18 +101,18 @@ def render_output(
     "></div>
   </div>
   <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-top:4px;">
-    <span>¥0</span>
-    <span>予算上限 ¥{budget:,.0f}</span>
+    <span>$0</span>
+    <span>Budget Limit ${budget:,.0f}</span>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-    # ── SA 収束グラフ ────────────────────────────────────────
-    with st.expander("📈 SA 収束グラフを表示", expanded=False):
+    # ── SA convergence graph ──────────────────────────────────
+    with st.expander("📈 Show SA Convergence Graph", expanded=False):
         st.plotly_chart(
             plot_sa_detail(result["energy_history"], result["best_history"], result["temp_history"]),
             use_container_width=True,
         )
         c1, c2 = st.columns(2)
-        c1.metric("最良エネルギー E*", f"{best_energy:.4f}")
-        c2.metric("イテレーション数", f"{result['n_iter']:,}")
+        c1.metric("Best Energy E*", f"{best_energy:.4f}")
+        c2.metric("Iterations", f"{result['n_iter']:,}")

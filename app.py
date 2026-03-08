@@ -1,55 +1,55 @@
-"""QUBO シミュレーテッドアニーリング — エントリーポイント。"""
+"""QUBO Simulated Annealing — Entry point."""
 
 import streamlit as st
 
 st.set_page_config(
-    page_title="QUBO SA シミュレータ",
+    page_title="QUBO SA Simulator",
     page_icon="🌡️",
     layout="wide",
 )
 
-# ── ページ定義 ──────────────────────────
+# ── Page definitions ──────────────────────────
 number_partitioning = st.Page(
     "pages/number_partitioning/page.py",
-    title="数分割問題",
+    title="Number Partitioning",
     icon="✂️",
     url_path="number_partitioning",
 )
 recommendation = st.Page(
     "pages/recommendation/page.py",
-    title="レコメンドシステム",
+    title="Recommendation System",
     icon="🛍️",
     url_path="recommendation",
 )
 
 
-# ── ホームページ本体 ─────────────────────
+# ── Home page ─────────────────────
 def home() -> None:
-    st.title("🌡️ QUBO シミュレーテッドアニーリング")
+    st.title("🌡️ QUBO Simulated Annealing")
     st.markdown(
         """
-シミュレーテッドアニーリング (SA) を使って、さまざまな組み合わせ最適化問題を  
-QUBO にエンコードしてブラウザ上で解くシミュレータ集です。
+A collection of simulators that encode various combinatorial optimization problems as QUBO  
+and solve them with Simulated Annealing (SA) — all in the browser.
 
-問題カードをクリックしてシミュレータに移動してください。
+Click a problem card to open its simulator.
 """
     )
     st.divider()
 
     PROBLEMS = [
         {
-            "name": "✂️ 数分割問題",
-            "desc": "数列を 2 グループに等分割する組み合わせを探索します。",
+            "name": "✂️ Number Partitioning",
+            "desc": "Find a way to split a list of numbers into two groups with equal sums.",
             "qubo": "minimize (Σ (2xᵢ − 1) nᵢ)²",
             "page": number_partitioning,
-            "status": "✅ 実装済み",
+            "status": "✅ Available",
         },
         {
-            "name": "🛍️ レコメンドシステム",
-            "desc": "21 商品カタログから必須カテゴリ・予算制約を満たす最適カートを SA で計算します。",
+            "name": "🛍️ Recommendation System",
+            "desc": "Use SA to find the best cart from 21 products that fits your required categories and budget.",
             "qubo": "minimize λ_req·Req + λ_opt·Opt + λ_budget·Budget − λ_score·Score",
             "page": recommendation,
-            "status": "✅ 実装済み",
+            "status": "✅ Available",
         },
     ]
 
@@ -59,18 +59,18 @@ QUBO にエンコードしてブラウザ上で解くシミュレータ集です
             col_title.markdown(f"### {p['name']}")
             col_status.markdown(f"<br>{p['status']}", unsafe_allow_html=True)
             st.markdown(p["desc"])
-            st.markdown(f"**QUBO 目的関数**: `{p['qubo']}`")
-            st.page_link(p["page"], label="▶ シミュレータを開く", icon="🔗")
+            st.markdown(f"**QUBO Objective**: `{p['qubo']}`")
+            st.page_link(p["page"], label="▶ Open Simulator", icon="🔗")
 
     st.divider()
-    st.caption("今後追加予定の問題: 最大カット問題、グラフ彩色問題、巡回セールスマン問題 など")
+    st.caption("Coming soon: Max-Cut, Graph Coloring, Traveling Salesman Problem, and more.")
 
 
-# ── ナビゲーション登録・実行 ─────────────
+# ── Navigation ─────────────────────────────
 pg = st.navigation(
     {
-        "ホーム": [st.Page(home, title="ホーム", icon="🌡️", default=True)],
-        "問題": [number_partitioning, recommendation],
+        "Home": [st.Page(home, title="Home", icon="🌡️", default=True)],
+        "Problems": [number_partitioning, recommendation],
     }
 )
 pg.run()
