@@ -1,4 +1,4 @@
-"""汎用 SA ソルバー・共通 UI コンポーネント。"""
+"""General-purpose SA solver and shared UI components."""
 
 from .sa import qubo_energy, simulated_annealing
 from .sa_sidebar import SAParams, sa_sidebar

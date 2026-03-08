@@ -1,4 +1,4 @@
-"""Streamlit ページ: 数分割問題 — QUBO × シミュレーテッドアニーリング。"""
+"""Streamlit page: Number Partitioning — QUBO × Simulated Annealing."""
 
 from __future__ import annotations
 
@@ -13,23 +13,24 @@ from core.sa_sidebar import sa_sidebar
 from pages.number_partitioning.input_ui import render_input
 from pages.number_partitioning.output_ui import render_output
 
-st.title("✂️ 数分割問題 — QUBO × シミュレーテッドアニーリング")
+st.title("✂️ Number Partitioning — QUBO × Simulated Annealing")
 st.markdown(
     """
-与えられた数列を 2 つのグループ A / B に分割し、各グループの合計を等しくする組み合わせを探します。  
-QUBO にエンコードし、シミュレーテッドアニーリング (SA) をブラウザ上で実行します。
+Given a list of numbers, find a way to split them into two groups (A / B)  
+so that the sum of each group is as equal as possible.  
+The problem is encoded as QUBO and solved with Simulated Annealing (SA) in the browser.
 """
 )
 
-# SA パラメータ (サイドバー)
+# SA parameters (sidebar)
 sa_params = sa_sidebar()
 
 st.divider()
 
-# 入力 UI
+# Input UI
 input_result = render_input()
 
-# 出力 UI
+# Output UI
 if input_result is not None:
     numbers, Q = input_result
     st.divider()

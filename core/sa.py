@@ -1,4 +1,4 @@
-"""汎用シミュレーテッドアニーリングソルバー。"""
+"""General-purpose Simulated Annealing solver."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import numpy as np
 
 
 def qubo_energy(x: np.ndarray, Q: np.ndarray) -> float:
-    """QUBO エネルギー E = x^T Q x を計算する。"""
+    """Compute QUBO energy E = x^T Q x."""
     return float(x @ Q @ x)
 
 
@@ -24,27 +24,27 @@ def simulated_annealing(
     timeout_sec: float | None = None,
 ) -> dict:
     """
-    シミュレーテッドアニーリングで QUBO を最小化する。
+    Minimize a QUBO problem using Simulated Annealing.
 
     Parameters
     ----------
-    Q            : QUBO 行列 (n×n)
-    T_init       : 初期温度
-    T_min        : 終了温度
-    cooling_rate : 冷却率 α (T ← α·T)
-    max_iter     : 最大イテレーション数
-    seed         : 乱数シード (None でランダム)
+    Q            : QUBO matrix (n×n)
+    T_init       : Initial temperature
+    T_min        : Minimum temperature (stop condition)
+    cooling_rate : Cooling rate α (T ← α·T)
+    max_iter     : Maximum number of iterations
+    seed         : Random seed (None for random)
 
     Returns
     -------
     dict:
-        best_x          : 最良解 (ndarray)
-        best_energy     : 最良エネルギー
-        energy_history  : 各ステップのエネルギー推移
-        best_history    : 各ステップのベストエネルギー推移
-        temp_history    : 各ステップの温度推移
-        n_iter          : 実際のイテレーション数
-        timed_out       : タイムアウトで打ち切られたか否か
+        best_x          : Best solution found (ndarray)
+        best_energy     : Energy of the best solution
+        energy_history  : Energy at each step
+        best_history    : Best energy at each step
+        temp_history    : Temperature at each step
+        n_iter          : Actual number of iterations run
+        timed_out       : Whether the run was stopped by timeout
     """
     rng = random.Random(seed)
     np_rng = np.random.default_rng(seed)

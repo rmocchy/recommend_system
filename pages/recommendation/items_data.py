@@ -1,4 +1,4 @@
-"""レコメンドシステム — サンプル商品カタログ定義。"""
+"""Recommendation System — Sample product catalog definitions."""
 
 from __future__ import annotations
 
@@ -10,67 +10,67 @@ class Item:
     id: int
     name: str
     category: str
-    price: int        # 円 (JPY)
-    score: float      # 0.0 〜 5.0 (評価スコア)
-    emoji: str        # 商品アイコン
-    description: str  # 商品説明
+    price: int        # price
+    score: float      # rating score from 0.0 to 5.0
+    emoji: str        # product icon
+    description: str  # short product description
 
 
-# ── カテゴリカラーマッピング ─────────────────────────────────
+# ── Category color mapping ────────────────────────────────────
 CATEGORY_COLOR: dict[str, str] = {
-    "スマホ・PC":  "#4A90D9",
-    "オーディオ":  "#7B68EE",
-    "ウェアラブル": "#5BA85C",
-    "書籍":        "#E8963C",
-    "ファッション": "#E05C8A",
-    "フード":      "#D4A017",
-    "スポーツ":    "#2AABB5",
-    "ホーム":      "#A05CB0",
+    "Phones & PCs":  "#4A90D9",
+    "Audio":         "#7B68EE",
+    "Wearables":     "#5BA85C",
+    "Books":         "#E8963C",
+    "Fashion":       "#E05C8A",
+    "Food":          "#D4A017",
+    "Sports":        "#2AABB5",
+    "Home":          "#A05CB0",
 }
 
 CATEGORY_BG: dict[str, str] = {
-    "スマホ・PC":  "#E8F0FA",
-    "オーディオ":  "#EEEAFF",
-    "ウェアラブル": "#E8F5E9",
-    "書籍":        "#FFF3E0",
-    "ファッション": "#FCE4EC",
-    "フード":      "#FFFDE7",
-    "スポーツ":    "#E0F7FA",
-    "ホーム":      "#F3E5F5",
+    "Phones & PCs":  "#E8F0FA",
+    "Audio":         "#EEEAFF",
+    "Wearables":     "#E8F5E9",
+    "Books":         "#FFF3E0",
+    "Fashion":       "#FCE4EC",
+    "Food":          "#FFFDE7",
+    "Sports":        "#E0F7FA",
+    "Home":          "#F3E5F5",
 }
 
 
-# ── デフォルト商品カタログ ───────────────────────────────────
+# ── Default product catalog ───────────────────────────────────
 DEFAULT_ITEMS: list[Item] = [
-    # スマホ・PC
-    Item(0,  "Ultra Laptop Pro 16",    "スマホ・PC",   29800, 4.7, "💻", "高性能 M3 チップ搭載、16 インチ Retina ディスプレイ"),
-    Item(1,  "スマートフォン Z Pro",    "スマホ・PC",   24800, 4.5, "📱", "120Hz AMOLED、200MP カメラ搭載フラッグシップ"),
-    Item(2,  "タブレット Air 11",       "スマホ・PC",   18800, 4.3, "📟", "軽量 450g、最大 12 時間バッテリー"),
-    # オーディオ
-    Item(3,  "ワイヤレスイヤホン X",   "オーディオ",   14800, 4.6, "🎧", "ANC 搭載、空間オーディオ対応、30 時間再生"),
-    Item(4,  "スタジオモニターHP",      "オーディオ",   22800, 4.4, "🎵", "Hi-Res Audio 対応プロ仕様ヘッドフォン"),
-    Item(5,  "Bluetooth スピーカー",   "オーディオ",    9800, 4.2, "🔊", "防水 IP67、360° サウンド、20W 出力"),
-    # ウェアラブル
-    Item(6,  "スマートウォッチ Ultra", "ウェアラブル",   27800, 4.8, "⌚", "ECG・血中酸素計測、GPS、チタンケース"),
-    Item(7,  "フィットネスバンド",      "ウェアラブル",    8800, 4.0, "🏃", "24h 心拍モニタ、睡眠スコア、7 日バッテリー"),
-    # 書籍
-    Item(8,  "独習 Python 第 3 版",    "書籍",           3500, 4.5, "📖", "初学者から中級者向け、演習問題 300 問収録"),
-    Item(9,  "量子コンピューティング入門","書籍",          4200, 4.3, "🔬", "QUBO・アニーリングも解説する最新技術書"),
-    Item(10, "世界の料理大全",          "書籍",           3200, 4.1, "🍽️", "50 か国 500 レシピ、フルカラー写真付"),
-    # ファッション
-    Item(11, "プレミアム スニーカー",   "ファッション",   16800, 4.4, "👟", "本革アッパー、クッションソール、3 色展開"),
-    Item(12, "カシミアニット",          "ファッション",   19800, 4.6, "🧥", "100% モンゴル産カシミア、洗濯機 OK"),
-    Item(13, "レザートート バッグ",     "ファッション",   25800, 4.2, "👜", "A4 収納可能、本革ハンドル、マグネット開閉"),
-    # フード
-    Item(14, "スペシャリティコーヒー",  "フード",          4500, 4.7, "☕", "エチオピア産シングルオリジン、200g"),
-    Item(15, "プロテインバー 12本入",   "フード",          3200, 4.0, "🍫", "20g タンパク質、砂糖不使用、6 フレーバー"),
-    Item(16, "有機緑茶セット",          "フード",          3000, 4.3, "🍵", "静岡産一番摘み、5 種類アソート"),
-    # スポーツ
-    Item(17, "ヨガマット Premium",      "スポーツ",        8900, 4.5, "🧘", "6mm 厚、滑り止め加工、専用バッグ付"),
-    Item(18, "調整式ダンベル 40kg",     "スポーツ",       28800, 4.4, "🏋️", "2.5kg 刻み、コンパクト収納、ラック付"),
-    # ホーム
-    Item(19, "空気清浄機 HEPA",         "ホーム",          26800, 4.6, "🌬️", "True HEPA + 活性炭フィルター、40 畳対応"),
-    Item(20, "アロマディフューザー",    "ホーム",           5800, 4.3, "🕯️", "超音波式、7 色 LED、タイマー付き"),
+    # Phones & PCs
+    Item(0,  "Ultra Laptop Pro 16",      "Phones & PCs", 29800, 4.7, "💻", "Powerful M3 chip, 16-inch Retina display"),
+    Item(1,  "Smartphone Z Pro",         "Phones & PCs", 24800, 4.5, "📱", "120Hz AMOLED, 200MP camera flagship"),
+    Item(2,  "Tablet Air 11",            "Phones & PCs", 18800, 4.3, "📟", "Lightweight 450g, up to 12-hour battery"),
+    # Audio
+    Item(3,  "Wireless Earphones X",     "Audio",        14800, 4.6, "🎧", "Active noise canceling, spatial audio, 30-hour playback"),
+    Item(4,  "Studio Monitor HP",        "Audio",        22800, 4.4, "🎵", "Hi-Res Audio, professional-grade headphones"),
+    Item(5,  "Bluetooth Speaker",        "Audio",         9800, 4.2, "🔊", "Waterproof IP67, 360° sound, 20W output"),
+    # Wearables
+    Item(6,  "Smartwatch Ultra",         "Wearables",    27800, 4.8, "⌚", "ECG & blood oxygen sensor, GPS, titanium case"),
+    Item(7,  "Fitness Band",             "Wearables",     8800, 4.0, "🏃", "24h heart rate monitor, sleep score, 7-day battery"),
+    # Books
+    Item(8,  "Learn Python 3rd Edition", "Books",         3500, 4.5, "📖", "For beginners to intermediate learners, 300 exercises included"),
+    Item(9,  "Intro to Quantum Computing","Books",        4200, 4.3, "🔬", "Covers QUBO and annealing — the latest in quantum tech"),
+    Item(10, "World Cuisine Encyclopedia","Books",        3200, 4.1, "🍽️", "500 recipes from 50 countries, full-color photos"),
+    # Fashion
+    Item(11, "Premium Sneakers",         "Fashion",      16800, 4.4, "👟", "Genuine leather upper, cushioned sole, 3 colors available"),
+    Item(12, "Cashmere Knit",            "Fashion",      19800, 4.6, "🧥", "100% Mongolian cashmere, machine washable"),
+    Item(13, "Leather Tote Bag",         "Fashion",      25800, 4.2, "👜", "Fits A4 size, genuine leather handles, magnetic closure"),
+    # Food
+    Item(14, "Specialty Coffee",         "Food",          4500, 4.7, "☕", "Ethiopian single-origin, 200g"),
+    Item(15, "Protein Bars (12 pack)",   "Food",          3200, 4.0, "🍫", "20g protein, no added sugar, 6 flavors"),
+    Item(16, "Organic Green Tea Set",    "Food",          3000, 4.3, "🍵", "Premium first-harvest green tea, 5-variety assortment"),
+    # Sports
+    Item(17, "Yoga Mat Premium",         "Sports",        8900, 4.5, "🧘", "6mm thick, non-slip surface, carrying bag included"),
+    Item(18, "Adjustable Dumbbell 40kg", "Sports",       28800, 4.4, "🏋️", "Adjustable in 2.5kg steps, compact storage, rack included"),
+    # Home
+    Item(19, "HEPA Air Purifier",        "Home",         26800, 4.6, "🌬️", "True HEPA + activated carbon filter, covers up to 66 m²"),
+    Item(20, "Aroma Diffuser",           "Home",          5800, 4.3, "🕯️", "Ultrasonic, 7-color LED, timer included"),
 ]
 
 ALL_CATEGORIES: list[str] = sorted({item.category for item in DEFAULT_ITEMS})

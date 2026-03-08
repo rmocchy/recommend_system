@@ -1,4 +1,4 @@
-"""Streamlit ページ: レコメンドシステム — QUBO × シミュレーテッドアニーリング。"""
+"""Streamlit page: Recommendation System — QUBO × Simulated Annealing."""
 
 from __future__ import annotations
 
@@ -14,27 +14,27 @@ from pages.recommendation.input_ui import render_input
 from pages.recommendation.items_data import DEFAULT_ITEMS
 from pages.recommendation.output_ui import render_output
 
-st.title("🛍️ レコメンドシステム — QUBO × シミュレーテッドアニーリング")
+st.title("🛍️ Recommendation System — QUBO × Simulated Annealing")
 st.markdown(
     """
-商品カタログから **必須カテゴリ** を満たしつつ **予算** に収まる最適な商品セットを、  
-QUBO × シミュレーテッドアニーリング (SA) でレコメンドします。
+Find the best set of products from a catalog that fits your **required categories** and **budget**,  
+using QUBO × Simulated Annealing (SA).
 """
 )
 
-# SA パラメータ (サイドバー)
+# SA parameters (sidebar)
 sa_params = sa_sidebar()
 
 st.divider()
 
-# 入力 UI + QUBO 構築
+# Input UI + QUBO construction
 input_result = render_input(items=DEFAULT_ITEMS)
 
-# 出力 UI (EC サイト風)
+# Output UI
 if input_result is not None:
     items, required_cats, optional_cats, budget, Q = input_result
     st.divider()
-    st.subheader("結果")
+    st.subheader("Results")
     render_output(
         items=items,
         budget=budget,

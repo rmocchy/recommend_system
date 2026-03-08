@@ -1,1 +1,1 @@
-"""レコメンドシステムページパッケージ。"""
+"""Recommendation system page package."""

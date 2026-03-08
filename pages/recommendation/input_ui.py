@@ -1,6 +1,6 @@
-"""レコメンドシステム — 入力 UI。
+"""Recommendation System — Input UI.
 
-商品カタログ表示・条件設定・QUBO 構築を担当する。
+Handles product catalog display, condition settings, and QUBO construction.
 """
 
 from __future__ import annotations
@@ -22,44 +22,44 @@ def render_input(
     items: list[Item] | None = None,
 ) -> tuple[list[Item], list[str], list[str], float, np.ndarray] | None:
     """
-    商品カタログ・条件設定・ QUBO 構築UIを描画する。
+    Render the product catalog, condition settings, and QUBO construction UI.
 
     Returns
     -------
     (items, required_cats, optional_cats, budget, Q_matrix)
-    または None (構築エラー時)
+    or None on construction error.
     """
     if items is None:
         items = DEFAULT_ITEMS
 
-    # ── 商品カタログ ─────────────────────────────────────────
-    with st.expander(f"🛍️ 商品カタログ ({len(items)} 件)", expanded=False):
-        # カテゴリフィルター
+    # ── Product catalog ──────────────────────────────────
+    with st.expander(f"🛍️ Product Catalog ({len(items)} items)", expanded=False):
+        # Category filter
         filter_cats = st.multiselect(
-            "カテゴリで絞り込み (空欄 = 全表示)",
+            "Filter by category (leave empty to show all)",
             options=ALL_CATEGORIES,
             default=[],
             key="rec_filter_cats",
         )
         filtered_items = [it for it in items if (not filter_cats or it.category in filter_cats)]
 
-        # 並び替え
+        # Sort
         sort_opt = st.selectbox(
-            "並び替え",
-            ["価格 (安順)", "価格 (高順)", "評価 (高順)", "カテゴリ"],
+            "Sort by",
+            ["Price (low to high)", "Price (high to low)", "Rating (high to low)", "Category"],
             key="rec_sort",
             label_visibility="collapsed",
         )
-        if sort_opt == "価格 (安順)":
+        if sort_opt == "Price (low to high)":
             filtered_items = sorted(filtered_items, key=lambda x: x.price)
-        elif sort_opt == "価格 (高順)":
+        elif sort_opt == "Price (high to low)":
             filtered_items = sorted(filtered_items, key=lambda x: -x.price)
-        elif sort_opt == "評価 (高順)":
+        elif sort_opt == "Rating (high to low)":
             filtered_items = sorted(filtered_items, key=lambda x: -x.score)
         else:
             filtered_items = sorted(filtered_items, key=lambda x: x.category)
 
-        # 商品カードグリッド (4列)
+        # Product card grid (4 columns)
         cols_per_row = 4
         for row_start in range(0, len(filtered_items), cols_per_row):
             row_items = filtered_items[row_start: row_start + cols_per_row]
@@ -71,8 +71,8 @@ def render_input(
 
     st.divider()
 
-    # ── QUBO パラメータスライダー ────────────────────────
-    st.subheader("🔢 QUBO パラメータ")
+    # ── QUBO parameter sliders ───────────────────────────
+    st.subheader("🔢 QUBO Parameters")
     cols = st.columns(2)
     qubo_params: dict = {}
     for idx, (key, spec) in enumerate(PARAMS.items()):
@@ -88,29 +88,29 @@ def render_input(
 
     st.divider()
 
-    # ── レコメンド条件 ────────────────────────────────────────
-    st.subheader("⚙️ レコメンド条件")
+    # ── Recommendation settings ───────────────────────────────
+    st.subheader("⚙️ Recommendation Settings")
     col_req, col_bud = st.columns([3, 1])
 
     with col_req:
-        st.markdown("**必須カテゴリ** (最低 1 件は必ず含める)")
+        st.markdown("**Required Categories** (at least 1 must be included)")
         required_cats: list[str] = st.multiselect(
-            "必須カテゴリを選択",
+            "Select required categories",
             options=ALL_CATEGORIES,
-            default=["スマホ・PC"],
+            default=["Phones & PCs"],
             key="rec_required_cats",
             label_visibility="collapsed",
         )
         optional_cats: list[str] = [c for c in ALL_CATEGORIES if c not in required_cats]
         if optional_cats:
             st.caption(
-                "ソフト報酬 (SA が選びやすくなる): " + "、".join(optional_cats)
+                "Optional (SA will lean toward these): " + ", ".join(optional_cats)
             )
 
     with col_bud:
-        st.markdown("**予算上限**")
+        st.markdown("**Budget Limit**")
         budget: float = st.number_input(
-            "予算 (円)",
+            "Budget",
             min_value=1000,
             max_value=1_000_000,
             value=80000,
@@ -119,21 +119,21 @@ def render_input(
             label_visibility="collapsed",
             key="rec_budget",
         )
-        st.caption(f"¥{budget:,}")
+        st.caption(f"${budget:,}")
 
-    # ── QUBO 行列構築 ────────────────────────────────────────
+    # ── Build QUBO matrix ────────────────────────────────
     Q = build_qubo_matrix(items, required_cats, optional_cats, budget, qubo_params)
     n = len(items)
 
-    # ── メトリクス表示 ──────────────────────────────────────
+    # ── Metrics ───────────────────────────────────────
     c1, c2, c4 = st.columns(3)
-    c1.metric("商品数", n)
-    c2.metric("必須カテゴリ", len(required_cats))
-    c4.metric("予算上限", f"¥{budget:,}")
+    c1.metric("Products", n)
+    c2.metric("Required Categories", len(required_cats))
+    c4.metric("Budget Limit", f"${budget:,}")
 
-    with st.expander("📐 QUBO 行列プレビュー", expanded=False):
+    with st.expander("📐 QUBO Matrix Preview", expanded=False):
         labels = [f"{it.emoji}{it.id}" for it in items]
-        tab_heat, tab_raw = st.tabs(["ヒートマップ", "生の値"])
+        tab_heat, tab_raw = st.tabs(["Heatmap", "Raw Values"])
         with tab_heat:
             st.plotly_chart(plot_qubo_matrix(Q, var_labels=labels), use_container_width=True)
         with tab_raw:
