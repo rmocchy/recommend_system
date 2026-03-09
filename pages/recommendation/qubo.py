@@ -67,7 +67,7 @@ def formulate_recommendation_qubo(
     ----------
     items               : List of products (Item dataclass)
     required_categories : Categories that must have at least 1 item selected
-    optional_categories : Categories that are nice to have (soft reward)
+    optional_categories : Categories where selecting more than 1 item is penalised (soft at-most-one)
     budget_target       : Budget limit
     lambda_required     : Penalty strength for missing a required category
     lambda_optional     : Penalty strength for missing an optional category
@@ -86,8 +86,8 @@ def formulate_recommendation_qubo(
     n = len(items)
 
     # ── Required category constraint ───────────────────────────────
-    # Force at least 1 item to be selected per required category
-    # Expand (Σ x_i - 1)^2 and add coefficients to QUBO
+    # Soft exactly-one constraint per required category: (Σ x_i − 1)²
+    # Penalises both 0 selections and ≥2 selections.
     for cat in required_categories:
         idx = [i for i, it in enumerate(items) if it.category == cat]
         if not idx:
@@ -98,7 +98,8 @@ def formulate_recommendation_qubo(
                 add(i, j, lambda_required)
             add(i, i, -2 * lambda_required)
 
-    # For non-required categories: penalize selecting more than 1 item
+    # For optional categories: derived from λ(Σx_i - 1/2)² minus the constant λ/4.
+    # Results in Q[i,i]=0, Q[i,j]=+λ (i≠j) → cost=0 for k=0 or k=1, penalises k≥2.
     for cat in optional_categories:
         idx = [i for i, it in enumerate(items) if it.category == cat]
         if not idx:
