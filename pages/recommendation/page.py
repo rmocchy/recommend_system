@@ -1,4 +1,4 @@
-"""Streamlit page: Recommendation System — QUBO × Simulated Annealing."""
+"""Streamlit page: Recommendation System"""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pages.recommendation.input_ui import render_input
 from pages.recommendation.items_data import DEFAULT_ITEMS
 from pages.recommendation.output_ui import render_output
 
-st.title("🛍️ Recommendation System — QUBO × Simulated Annealing")
+st.title("🛍️ Recommendation System")
 st.markdown(
     """
 Find the best set of products from a catalog that fits your **required categories** and **budget**,  

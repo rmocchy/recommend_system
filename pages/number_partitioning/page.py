@@ -1,4 +1,4 @@
-"""Streamlit page: Number Partitioning — QUBO × Simulated Annealing."""
+"""Streamlit page: Number Partitioning"""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from core.sa_sidebar import sa_sidebar
 from pages.number_partitioning.input_ui import render_input
 from pages.number_partitioning.output_ui import render_output
 
-st.title("✂️ Number Partitioning — QUBO × Simulated Annealing")
+st.title("✂️ Number Partitioning")
 st.markdown(
     """
 Given a list of numbers, find a way to split them into two groups (A / B)  
