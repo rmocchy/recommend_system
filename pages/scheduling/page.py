@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 
-from core.sa_sidebar import sa_sidebar
+from core.neal_sidebar import neal_sidebar
 from pages.scheduling.input_ui import render_input
 from pages.scheduling.output_ui import render_output
 
@@ -102,7 +102,7 @@ Prohibits task $f_j$ from starting before its predecessor $f_i$ has finished.
     )
 
 # SA parameters (sidebar)
-sa_params = sa_sidebar()
+neal_params = neal_sidebar()
 
 st.divider()
 
@@ -111,7 +111,7 @@ result = render_input()
 
 # Output UI
 if result is not None:
-    cfg, Q, var_list = result
+    cfg, bqm, Q, var_list = result
     st.divider()
     st.subheader("Results")
-    render_output(cfg=cfg, Q=Q, var_list=var_list, sa_params=sa_params)
+    render_output(cfg=cfg, bqm=bqm, var_list=var_list, neal_params=neal_params)

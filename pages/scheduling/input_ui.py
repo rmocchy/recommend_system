@@ -6,6 +6,7 @@ and QUBO matrix construction.
 
 from __future__ import annotations
 
+import dimod
 import numpy as np
 import streamlit as st
 
@@ -13,12 +14,13 @@ from pages.scheduling.qubo import (
     PARAMS,
     DEFAULT_CONFIG,
     SchedulingConfig,
+    build_bqm,
     build_qubo_matrix,
 )
 
 
-def render_input() -> tuple[SchedulingConfig, np.ndarray, list[tuple[str, str, int]]] | None:
-    """Render all input widgets and return (config, Q_matrix, var_list) or None on error."""
+def render_input() -> tuple[SchedulingConfig, dimod.BinaryQuadraticModel, np.ndarray, list[tuple[str, str, int]]] | None:
+    """Render all input widgets and return (config, bqm, Q_matrix, var_list) or None on error."""
 
     # ── Problem Configuration ────────────────────────────────────
     st.subheader("⚙️ Problem Configuration")
@@ -128,9 +130,10 @@ def render_input() -> tuple[SchedulingConfig, np.ndarray, list[tuple[str, str, i
     )
 
     try:
-        Q, var_list = build_qubo_matrix(cfg)
+        bqm, var_list = build_bqm(cfg)
+        Q, _ = build_qubo_matrix(cfg)
     except Exception as exc:
         st.error(f"QUBO construction failed: {exc}")
         return None
 
-    return cfg, Q, var_list
+    return cfg, bqm, Q, var_list

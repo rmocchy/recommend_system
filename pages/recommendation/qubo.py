@@ -1,7 +1,8 @@
-"""Recommendation System — QUBO formulation module."""
+"""Recommendation System — QUBO formulation module (dimod)."""
 
 from __future__ import annotations
 
+import dimod
 import numpy as np
 from typing import TYPE_CHECKING
 
@@ -123,16 +124,49 @@ def formulate_recommendation_qubo(
     return Q
 
 
+def build_bqm(
+    items: list["Item"],
+    required_categories: list[str],
+    optional_categories: list[str],
+    budget_target: float,
+    params: dict,
+) -> dimod.BinaryQuadraticModel:
+    """Build a dimod BinaryQuadraticModel for the recommendation problem."""
+    q_dict = formulate_recommendation_qubo(
+        items=items,
+        required_categories=required_categories,
+        optional_categories=optional_categories,
+        budget_target=budget_target,
+        lambda_required=params.get("lambda_required", 5.0),
+        lambda_optional=params.get("lambda_optional", 5.0),
+        lambda_budget=params.get("lambda_budget", 1.0),
+        lambda_score=params.get("lambda_score", 1.0),
+    )
+
+    n = len(items)
+    bqm = dimod.BinaryQuadraticModel(vartype=dimod.BINARY)
+    for i in range(n):
+        bqm.add_variable(i, 0.0)
+
+    for (i, j), v in q_dict.items():
+        if i == j:
+            bqm.add_variable(i, v)
+        elif i < j:
+            bqm.add_interaction(i, j, v)
+        else:
+            bqm.add_interaction(j, i, v)
+
+    return bqm
+
+
 def build_qubo_matrix(
     items: list["Item"],
     required_categories: list[str],
     optional_categories: list[str],
     budget_target: float,
     params: dict,
-) -> "np.ndarray":  # type: ignore[name-defined]
-    """Convert QuboDict to np.ndarray and return it."""
-    import numpy as np
-
+) -> np.ndarray:
+    """Convert QuboDict to np.ndarray and return it (kept for QUBO preview)."""
     q_dict = formulate_recommendation_qubo(
         items=items,
         required_categories=required_categories,

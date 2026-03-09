@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 
-from core.sa_sidebar import sa_sidebar
+from core.neal_sidebar import neal_sidebar
 from pages.recommendation.input_ui import render_input
 from pages.recommendation.items_data import DEFAULT_ITEMS
 from pages.recommendation.output_ui import render_output
@@ -112,7 +112,7 @@ Lowers the diagonal entries for highly-rated items, encouraging their selection.
     )
 
 # SA parameters (sidebar)
-sa_params = sa_sidebar()
+neal_params = neal_sidebar()
 
 st.divider()
 
@@ -121,12 +121,12 @@ input_result = render_input(items=DEFAULT_ITEMS)
 
 # Output UI
 if input_result is not None:
-    items, required_cats, optional_cats, budget, Q = input_result
+    items, required_cats, optional_cats, budget, bqm, Q = input_result
     st.divider()
     st.subheader("Results")
     render_output(
         items=items,
         budget=budget,
-        Q=Q,
-        sa_params=sa_params,
+        bqm=bqm,
+        neal_params=neal_params,
     )
