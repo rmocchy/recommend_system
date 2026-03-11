@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 
-from core.neal_sidebar import neal_sidebar
+from core.openjij_sidebar import openjij_sidebar
 from pages.recommendation.input_ui import render_input
 from pages.recommendation.items_data import DEFAULT_ITEMS
 from pages.recommendation.output_ui import render_output
@@ -112,7 +112,7 @@ Lowers the diagonal entries for highly-rated items, encouraging their selection.
     )
 
 # SA parameters (sidebar)
-neal_params = neal_sidebar()
+openjij_params = openjij_sidebar()
 
 st.divider()
 
@@ -128,5 +128,5 @@ if input_result is not None:
         items=items,
         budget=budget,
         bqm=bqm,
-        neal_params=neal_params,
+        openjij_params=openjij_params,
     )

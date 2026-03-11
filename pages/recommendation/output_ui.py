@@ -8,8 +8,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from core.neal_sa import run_neal
-from core.neal_sidebar import NealParams
+from core.openjij_sa import run_openjij
+from core.openjij_sidebar import OpenjijParams
 from pages.recommendation.cards import compact_card_html, item_card_html
 from pages.recommendation.items_data import Item
 
@@ -18,18 +18,18 @@ def render_output(
     items: list[Item],
     budget: float,
     bqm: dimod.BinaryQuadraticModel,
-    neal_params: NealParams,
+    openjij_params: OpenjijParams,
 ) -> None:
     """
-    Run Neal SA and display results in a rich shopping-site style layout.
+    Run OpenJij SA and display results in a rich shopping-site style layout.
     """
-    if not neal_params.run:
+    if not openjij_params.run:
         st.info("👈 Press the **Run SA** button in the sidebar.")
         return
 
-    # ── Run Neal SA ────────────────────────────────────────
-    with st.spinner("🤖 Computing recommendations with Neal SA…"):
-        result = run_neal(bqm, neal_params)
+    # ── Run OpenJij SA ──────────────────────────────────────
+    with st.spinner("🤖 Computing recommendations with OpenJij SA…"):
+        result = run_openjij(bqm, openjij_params)
 
     best_x = result.best_x
     best_energy: float = result.penalty

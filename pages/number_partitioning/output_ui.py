@@ -10,8 +10,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from core.neal_sa import run_neal
-from core.neal_sidebar import NealParams
+from core.openjij_sa import run_openjij
+from core.openjij_sidebar import OpenjijParams
 
 
 # ── Number partitioning chart ─────────────────────────────────
@@ -80,23 +80,23 @@ def _plot_energy_distribution(energies: np.ndarray, best_energy: float) -> go.Fi
 def render_output(
     numbers: list[float],
     bqm: dimod.BinaryQuadraticModel,
-    neal_params: NealParams,
+    openjij_params: OpenjijParams,
 ) -> None:
     """
-    Run neal SA and render results and graphs.
+    Run OpenJij SA and render results and graphs.
 
     Parameters
     ----------
-    numbers     : Input number sequence
-    bqm         : dimod BinaryQuadraticModel built by build_qubo()
-    neal_params : NealParams returned by neal_sidebar()
+    numbers        : Input number sequence
+    bqm            : dimod BinaryQuadraticModel built by build_qubo()
+    openjij_params : OpenjijParams returned by openjij_sidebar()
     """
-    if not neal_params.run:
+    if not openjij_params.run:
         st.info("👈 Set SA parameters in the sidebar, then press the **Run SA** button.")
         return
 
-    with st.spinner("Running Neal Simulated Annealing…"):
-        result = run_neal(bqm, neal_params)
+    with st.spinner("Running OpenJij Simulated Annealing…"):
+        result = run_openjij(bqm, openjij_params)
 
     penalty      = result.penalty
     qubo_raw     = result.qubo_raw

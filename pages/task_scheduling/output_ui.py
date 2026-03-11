@@ -1,6 +1,6 @@
-"""Scheduling — Neal SA execution & output UI.
+"""Scheduling — OpenJij SA execution & output UI.
 
-Runs Neal SA, decodes the solution, and displays results including a
+Runs OpenJij SA, decodes the solution, and displays results including a
 Plotly-based Gantt chart.
 """
 
@@ -11,8 +11,8 @@ import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
 
-from core.neal_sa import run_neal
-from core.neal_sidebar import NealParams
+from core.openjij_sa import run_openjij
+from core.openjij_sidebar import OpenjijParams
 from pages.task_scheduling.qubo import SchedulingConfig
 
 # Colour palette for tasks (matching the blueprint's matplotlib colours)
@@ -124,10 +124,10 @@ def render_output(
     cfg: SchedulingConfig,
     bqm: dimod.BinaryQuadraticModel,
     var_list: list[tuple[str, str, int]],
-    neal_params: NealParams,
+    openjij_params: OpenjijParams,
 ) -> None:
-    """Run Neal SA and display the full results panel."""
-    if not neal_params.run:
+    """Run OpenJij SA and display the full results panel."""
+    if not openjij_params.run:
         st.info("👈 Press the **Run SA** button in the sidebar.")
         return
 
@@ -135,9 +135,9 @@ def render_output(
     with st.expander("📊 Task Pool (Before Optimization)", expanded=False):
         st.plotly_chart(_before_chart(cfg), use_container_width=True)
 
-    # ── Run Neal SA ────────────────────────────────────────────────────
-    with st.spinner("🤖 Running Neal Simulated Annealing…"):
-        result = run_neal(bqm, neal_params)
+    # ── Run OpenJij SA ──────────────────────────────────────────
+    with st.spinner("🤖 Running OpenJij Simulated Annealing…"):
+        result = run_openjij(bqm, openjij_params)
 
     best_x = result.best_x
     best_energy: float = result.penalty
@@ -209,5 +209,5 @@ def render_output(
         st.plotly_chart(fig_e, use_container_width=True)
         c1, c2 = st.columns(2)
         c1.metric("Best Energy E*", f"{best_energy:.4f}")
-        c2.metric("Num reads", f"{neal_params.num_reads}")
+        c2.metric("Num reads", f"{openjij_params.num_reads}")
 
