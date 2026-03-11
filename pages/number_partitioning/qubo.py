@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import dimod
 import numpy as np
-from pyqubo import Array, Placeholder
+from pyqubo import Array, Model # type: ignore
+import dimod
 
 # QUBO parameter definition
 # Each entry holds: type / label / default / min / max / step
@@ -20,7 +20,7 @@ PARAMS: dict = {
 }
 
 
-def build_qubo(numbers: list[float], lam: float = 1.0) -> dimod.BinaryQuadraticModel:
+def build_qubo(numbers: list[float], lam: float = 1.0) -> Model:
     """
     Build a BinaryQuadraticModel for the number partitioning problem using PyQUBO.
 
@@ -40,26 +40,12 @@ def build_qubo(numbers: list[float], lam: float = 1.0) -> dimod.BinaryQuadraticM
 
     # ── PyQUBO symbolic formulation ──────────────────────────────
     x = Array.create('x', shape=n, vartype='BINARY')
-    lam_ph = Placeholder('lam')
 
-    # H = λ * (Σ_i (2x_i − 1) * n_i)^2
+    # H = λ * (Σ_i (2x_i − 1) * n_i)^2  (lam は float — Placeholder 不要)
     delta = sum((2 * x[i] - 1) * float(nums[i]) for i in range(n))
-    H = lam_ph * delta * delta
+    H = lam * delta * delta
 
-    model = H.compile()
-    bqm = model.to_bqm(feed_dict={'lam': lam})
-
-    # dimod.BinaryQuadraticModel — relabel str keys to int for downstream
-    # compatibility (variable indices used as integers elsewhere)
-    bqm = dimod.BinaryQuadraticModel(
-        {int(v.split('[')[1].rstrip(']')): bias for v, bias in bqm.linear.items()},
-        {(int(u.split('[')[1].rstrip(']')), int(v.split('[')[1].rstrip(']'))): bias
-         for (u, v), bias in bqm.quadratic.items()},
-        bqm.offset,
-        vartype=dimod.BINARY,
-    )
-
-    return bqm
+    return H.compile() # type: ignore
 
 
 def bqm_to_numpy(bqm: dimod.BinaryQuadraticModel) -> np.ndarray:
@@ -69,7 +55,7 @@ def bqm_to_numpy(bqm: dimod.BinaryQuadraticModel) -> np.ndarray:
     Variables are sorted and mapped to row/column indices.
     The offset (constant term) is not included.
     """
-    labels = sorted(bqm.variables)  # type: ignore[type-var]
+    labels = sorted(bqm.variables, key=lambda v: int(str(v).split('[')[1].rstrip(']')))  # type: ignore[type-var]
     idx = {v: i for i, v in enumerate(labels)}
     n = len(labels)
     Q = np.zeros((n, n))

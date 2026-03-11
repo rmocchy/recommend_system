@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-import dimod
+from pyqubo import Model
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -79,7 +79,7 @@ def _plot_energy_distribution(energies: np.ndarray, best_energy: float) -> go.Fi
 # ── Main output UI ────────────────────────────────────────────
 def render_output(
     numbers: list[float],
-    bqm: dimod.BinaryQuadraticModel,
+    bqm: Model,
     openjij_params: OpenjijParams,
 ) -> None:
     """
@@ -88,7 +88,7 @@ def render_output(
     Parameters
     ----------
     numbers        : Input number sequence
-    bqm            : dimod BinaryQuadraticModel built by build_qubo()
+    bqm            : pyqubo.Model built by build_qubo()
     openjij_params : OpenjijParams returned by openjij_sidebar()
     """
     if not openjij_params.run:

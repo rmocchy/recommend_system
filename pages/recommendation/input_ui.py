@@ -5,10 +5,11 @@ Handles product catalog display, condition settings, and QUBO construction.
 
 from __future__ import annotations
 
-import dimod
 import numpy as np
 import pandas as pd
 import streamlit as st
+
+from pyqubo import Model # type: ignore
 
 from core.sa_viz import plot_qubo_matrix
 from pages.recommendation.cards import item_card_html
@@ -21,7 +22,7 @@ from pages.recommendation.items_data import (
 
 def render_input(
     items: list[Item] | None = None,
-) -> tuple[list[Item], list[str], list[str], float, dimod.BinaryQuadraticModel, np.ndarray] | None:
+) -> tuple[list[Item], list[str], list[str], float, Model, np.ndarray] | None:
     """
     Render the product catalog, condition settings, and QUBO construction UI.
 

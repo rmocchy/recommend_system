@@ -6,7 +6,7 @@ Plotly-based Gantt chart.
 
 from __future__ import annotations
 
-import dimod
+from pyqubo import Model
 import numpy as np
 import plotly.graph_objects as go
 import streamlit as st
@@ -122,7 +122,7 @@ def _before_chart(cfg: SchedulingConfig) -> go.Figure:
 
 def render_output(
     cfg: SchedulingConfig,
-    bqm: dimod.BinaryQuadraticModel,
+    bqm: Model,
     var_list: list[tuple[str, str, int]],
     openjij_params: OpenjijParams,
 ) -> None:

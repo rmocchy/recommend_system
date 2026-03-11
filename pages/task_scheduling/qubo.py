@@ -10,8 +10,8 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 
-import dimod
 import numpy as np
+from pyqubo import Binary, Model # type: ignore
 
 # ── QUBO parameter slider definitions ───────────────────────────
 PARAMS: dict[str, dict] = {
@@ -204,29 +204,22 @@ def build_qubo_matrix(cfg: SchedulingConfig) -> tuple[np.ndarray, list[tuple[str
     return Q_mat, var_list
 
 
-def build_bqm(cfg: SchedulingConfig) -> tuple[dimod.BinaryQuadraticModel, list[tuple[str, str, int]]]:
-    """Build a dimod BinaryQuadraticModel for the scheduling problem.
+def build_bqm(cfg: SchedulingConfig) -> tuple[Model, list[tuple[str, str, int]]]:
+    """Build a PyQUBO Model for the scheduling problem.
 
     Returns
     -------
-    bqm      : dimod.BinaryQuadraticModel
+    model    : pyqubo.Model (compiled QUBO Hamiltonian)
     var_list : ordered variable list for decoding the solution vector
     """
     Q_mat, var_list = build_qubo_matrix(cfg)
     n = len(var_list)
 
-    bqm = dimod.BinaryQuadraticModel(vartype=dimod.BINARY)
-    for i in range(n):
-        bqm.add_variable(i, 0.0)
+    x = [Binary(f'x[{i}]') for i in range(n)]
+    H = sum(
+        Q_mat[i, j] * x[i] * x[j]
+        for i in range(n) for j in range(i, n)
+        if Q_mat[i, j] != 0.0
+    )
 
-    for i in range(n):
-        for j in range(i, n):
-            val = Q_mat[i, j]
-            if val == 0.0:
-                continue
-            if i == j:
-                bqm.add_variable(i, val)
-            else:
-                bqm.add_interaction(i, j, val)
-
-    return bqm, var_list
+    return H.compile(), var_list # type: ignore

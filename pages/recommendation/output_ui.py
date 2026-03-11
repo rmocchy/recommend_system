@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import dimod
+from pyqubo import Model
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
@@ -17,7 +17,7 @@ from pages.recommendation.items_data import Item
 def render_output(
     items: list[Item],
     budget: float,
-    bqm: dimod.BinaryQuadraticModel,
+    bqm: Model,
     openjij_params: OpenjijParams,
 ) -> None:
     """
