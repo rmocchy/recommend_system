@@ -1,5 +1,3 @@
-"""Streamlit page: Scheduling Optimizer"""
-
 from __future__ import annotations
 
 import sys
@@ -10,10 +8,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import streamlit as st
 
 from core.neal_sidebar import neal_sidebar
-from pages.scheduling.input_ui import render_input
-from pages.scheduling.output_ui import render_output
+from pages.task_scheduling.input_ui import render_input
+from pages.task_scheduling.output_ui import render_output
 
-st.title("📅 Scheduling Optimizer")
+st.title("📅 Task Scheduling Optimizer")
 st.markdown(
     """
 Assign **workers** to **tasks** across discrete **time slots** to minimise makespan,  

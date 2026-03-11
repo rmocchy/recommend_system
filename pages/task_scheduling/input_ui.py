@@ -10,7 +10,7 @@ import dimod
 import numpy as np
 import streamlit as st
 
-from pages.scheduling.qubo import (
+from pages.task_scheduling.qubo import (
     PARAMS,
     DEFAULT_CONFIG,
     SchedulingConfig,

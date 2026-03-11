@@ -22,8 +22,8 @@ recommendation = st.Page(
     url_path="recommendation",
 )
 scheduling = st.Page(
-    "pages/scheduling/page.py",
-    title="Scheduling Optimizer",
+    "pages/task_scheduling/page.py",
+    title="Task Scheduling Optimizer",
     icon="📅",
     url_path="scheduling",
 )

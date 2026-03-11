@@ -13,7 +13,7 @@ import streamlit as st
 
 from core.neal_sa import run_neal
 from core.neal_sidebar import NealParams
-from pages.scheduling.qubo import SchedulingConfig
+from pages.task_scheduling.qubo import SchedulingConfig
 
 # Colour palette for tasks (matching the blueprint's matplotlib colours)
 _TASK_COLOURS = [
