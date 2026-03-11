@@ -1,5 +1,3 @@
-"""Streamlit page: Scheduling Optimizer"""
-
 from __future__ import annotations
 
 import sys
@@ -9,16 +7,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 
-from core.neal_sidebar import neal_sidebar
-from pages.scheduling.input_ui import render_input
-from pages.scheduling.output_ui import render_output
+from core.openjij_sidebar import openjij_sidebar
+from pages.task_scheduling.input_ui import render_input
+from pages.task_scheduling.output_ui import render_output
 
-st.title("📅 Scheduling Optimizer")
+st.title("📅 Task Scheduling Optimizer")
 st.markdown(
     """
 Assign **workers** to **tasks** across discrete **time slots** to minimise makespan,  
 while respecting effort requirements, continuity, no-multitasking and precedence constraints —  
 encoded as a QUBO problem and solved with Simulated Annealing (SA).
+
+📄 QUBO implementation: [pages/task_scheduling/qubo.py](https://github.com/rmocchy/sa_playground/blob/main/pages/task_scheduling/qubo.py)
 """
 )
 
@@ -102,7 +102,7 @@ Prohibits task $f_j$ from starting before its predecessor $f_i$ has finished.
     )
 
 # SA parameters (sidebar)
-neal_params = neal_sidebar()
+openjij_params = openjij_sidebar()
 
 st.divider()
 
@@ -114,4 +114,4 @@ if result is not None:
     cfg, bqm, Q, var_list = result
     st.divider()
     st.subheader("Results")
-    render_output(cfg=cfg, bqm=bqm, var_list=var_list, neal_params=neal_params)
+    render_output(cfg=cfg, bqm=bqm, var_list=var_list, openjij_params=openjij_params)

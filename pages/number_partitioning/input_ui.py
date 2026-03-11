@@ -5,7 +5,6 @@ Handles number sequence input, QUBO parameter adjustment, and QUBO matrix constr
 
 from __future__ import annotations
 
-import dimod
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -20,7 +19,7 @@ _PRESETS: dict[str, list[float]] = {
 }
 
 
-def render_input() -> tuple[list[float], dimod.BinaryQuadraticModel] | None:
+def render_input() -> tuple[list[float], object] | None:
     """
     Render number sequence input, QUBO parameter input, and QUBO matrix construction.
 
@@ -74,7 +73,7 @@ def render_input() -> tuple[list[float], dimod.BinaryQuadraticModel] | None:
     with st.expander("📐 Check QUBO Matrix", expanded=False):
         tab_heat, tab_raw = st.tabs(["Heatmap", "Raw Values"])
         labels = [f"n_{i}" for i in range(len(numbers))]
-        Q_np = bqm_to_numpy(bqm)
+        Q_np = bqm_to_numpy(bqm.to_bqm())
         with tab_heat:
             st.plotly_chart(plot_qubo_matrix(Q_np, var_labels=labels), use_container_width=True)
         with tab_raw:

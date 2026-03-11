@@ -6,11 +6,12 @@ and QUBO matrix construction.
 
 from __future__ import annotations
 
-import dimod
 import numpy as np
 import streamlit as st
 
-from pages.scheduling.qubo import (
+from pyqubo import Model # type: ignore
+
+from pages.task_scheduling.qubo import (
     PARAMS,
     DEFAULT_CONFIG,
     SchedulingConfig,
@@ -19,7 +20,7 @@ from pages.scheduling.qubo import (
 )
 
 
-def render_input() -> tuple[SchedulingConfig, dimod.BinaryQuadraticModel, np.ndarray, list[tuple[str, str, int]]] | None:
+def render_input() -> tuple[SchedulingConfig, Model, np.ndarray, list[tuple[str, str, int]]] | None:
     """Render all input widgets and return (config, bqm, Q_matrix, var_list) or None on error."""
 
     # ── Problem Configuration ────────────────────────────────────

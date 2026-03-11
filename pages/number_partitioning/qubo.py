@@ -1,9 +1,10 @@
-"""Number Partitioning — QUBO formulation module (dimod)."""
+"""Number Partitioning — QUBO formulation module (PyQUBO)."""
 
 from __future__ import annotations
 
-import dimod
 import numpy as np
+from pyqubo import Array, Model # type: ignore
+import dimod
 
 # QUBO parameter definition
 # Each entry holds: type / label / default / min / max / step
@@ -19,13 +20,15 @@ PARAMS: dict = {
 }
 
 
-def build_qubo(numbers: list[float], lam: float = 1.0) -> dimod.BinaryQuadraticModel:
+def build_qubo(numbers: list[float], lam: float = 1.0) -> Model:
     """
-    Build a BinaryQuadraticModel for the number partitioning problem.
+    Build a BinaryQuadraticModel for the number partitioning problem using PyQUBO.
 
-    Objective: λ * (Σ_i (2x_i - 1) * n_i)^2
+    Hamiltonian:
+        H = λ * (Σ_i (2x_i - 1) * n_i)^2
 
-    Expanding (with x_i^2 = x_i for binary variables):
+    PyQUBO compiles this symbolic expression and returns a dimod BQM
+    whose coefficients match the analytic expansion:
         linear bias   : λ * 4 * n_i * (n_i - S)
         quadratic bias: λ * 8 * n_i * n_j   (i < j)
         offset        : λ * S^2
@@ -33,24 +36,16 @@ def build_qubo(numbers: list[float], lam: float = 1.0) -> dimod.BinaryQuadraticM
     where S = Σ_i n_i.
     """
     nums = np.array(numbers, dtype=float)
-    S = float(nums.sum())
     n = len(nums)
 
-    bqm = dimod.BinaryQuadraticModel(vartype=dimod.BINARY)
+    # ── PyQUBO symbolic formulation ──────────────────────────────
+    x = Array.create('x', shape=n, vartype='BINARY')
 
-    # Linear (diagonal) terms
-    for i in range(n):
-        bqm.add_variable(i, lam * 4.0 * float(nums[i]) * (float(nums[i]) - S))
+    # H = λ * (Σ_i (2x_i − 1) * n_i)^2  (lam は float — Placeholder 不要)
+    delta = sum((2 * x[i] - 1) * float(nums[i]) for i in range(n))
+    H = lam * delta * delta
 
-    # Quadratic (off-diagonal) terms
-    for i in range(n):
-        for j in range(i + 1, n):
-            bqm.add_interaction(i, j, lam * 8.0 * float(nums[i]) * float(nums[j]))
-
-    # Constant offset (λ S²) — not part of Q but useful for true energy
-    bqm.offset += lam * S * S
-
-    return bqm
+    return H.compile() # type: ignore
 
 
 def bqm_to_numpy(bqm: dimod.BinaryQuadraticModel) -> np.ndarray:
@@ -60,7 +55,7 @@ def bqm_to_numpy(bqm: dimod.BinaryQuadraticModel) -> np.ndarray:
     Variables are sorted and mapped to row/column indices.
     The offset (constant term) is not included.
     """
-    labels = sorted(bqm.variables)  # type: ignore[type-var]
+    labels = sorted(bqm.variables, key=lambda v: int(str(v).split('[')[1].rstrip(']')))  # type: ignore[type-var]
     idx = {v: i for i, v in enumerate(labels)}
     n = len(labels)
     Q = np.zeros((n, n))

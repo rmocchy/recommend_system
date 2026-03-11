@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 
-from core.neal_sidebar import neal_sidebar
+from core.openjij_sidebar import openjij_sidebar
 from pages.number_partitioning.input_ui import render_input
 from pages.number_partitioning.output_ui import render_output
 
@@ -19,6 +19,8 @@ st.markdown(
 Given a list of numbers, find a way to split them into two groups (A / B)  
 so that the sum of each group is as equal as possible.  
 The problem is encoded as QUBO and solved with Simulated Annealing (SA) in the browser.
+
+📄 QUBO implementation: [pages/number_partitioning/qubo.py](https://github.com/rmocchy/sa_playground/blob/main/pages/number_partitioning/qubo.py)
 """
 )
 
@@ -84,8 +86,8 @@ $$Q_{ii} = \lambda \cdot 4\, n_i(n_i - S), \qquad Q_{ij} = \lambda \cdot 8\, n_i
         """
     )
 
-# Neal SA parameters (sidebar)
-neal_params = neal_sidebar()
+# OpenJij SA parameters (sidebar)
+openjij_params = openjij_sidebar()
 
 st.divider()
 
@@ -96,5 +98,5 @@ input_result = render_input()
 if input_result is not None:
     numbers, bqm = input_result
     st.divider()
-    render_output(numbers, bqm, neal_params)
+    render_output(numbers, bqm, openjij_params)
 

@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import streamlit as st
 
-from core.neal_sidebar import neal_sidebar
+from core.openjij_sidebar import openjij_sidebar
 from pages.recommendation.input_ui import render_input
 from pages.recommendation.items_data import DEFAULT_ITEMS
 from pages.recommendation.output_ui import render_output
@@ -21,6 +21,8 @@ Find the best set of products from a catalog that fits your **required categorie
 using QUBO × Simulated Annealing (SA).
 
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/file/d/1Mn286V_Rbad--ZDMTUEpLL5F7X8Qokrt/view?usp=sharing)
+
+📄 QUBO implementation: [pages/recommendation/qubo.py](https://github.com/rmocchy/sa_playground/blob/main/pages/recommendation/qubo.py)
 """
 )
 
@@ -112,7 +114,7 @@ Lowers the diagonal entries for highly-rated items, encouraging their selection.
     )
 
 # SA parameters (sidebar)
-neal_params = neal_sidebar()
+openjij_params = openjij_sidebar()
 
 st.divider()
 
@@ -128,5 +130,5 @@ if input_result is not None:
         items=items,
         budget=budget,
         bqm=bqm,
-        neal_params=neal_params,
+        openjij_params=openjij_params,
     )
